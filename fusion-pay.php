@@ -181,6 +181,12 @@ function fusion_pay_process_payment() {
     $saved_articles = get_option('fusion_pay_article', '[]');
     $articles = json_decode($saved_articles, true) ?: [];
 
+    // Transform the articles array to the desired format
+    $transformedArticles = [];
+    foreach ($articles as $article) {
+        $transformedArticles[$article['name']] = $article['price'];
+    }
+
     $totalPrice = get_option('fusion_pay_total_price');
 
     // Get dynamic settings from the admin panel
@@ -190,7 +196,7 @@ function fusion_pay_process_payment() {
     // Prepare the data for the API request
     $body = array(
         'totalPrice' => $totalPrice,
-        'article' => $articles,
+        'article' => $transformedArticles,
         'numeroSend' => $numeroSend,
         'nomclient' => $nomClient,
         'return_url' => $returnUrl
@@ -212,7 +218,6 @@ function fusion_pay_process_payment() {
         
         if ($responseBody['statut']) {
             $paymentUrl = esc_url($responseBody['url']);
-            // echo 'Payment initiated! Redirecting to: <a href="' . $paymentUrl . '">' . $paymentUrl . '</a>';
             wp_redirect($paymentUrl);
         } else {
             echo 'Error: ' . esc_html($responseBody['message']);

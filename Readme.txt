@@ -1,5 +1,5 @@
 === Fusion Pay Payment Gateway ===
-Contributors: yaya12085
+Contributors: Yayadev
 Donate link: https://www.pay.moneyfusion.net/Faire_un_don_1726979068528/
 Tags: payments, gateway, fusionpay, ecommerce, api
 Requires at least: 4.7
@@ -9,11 +9,11 @@ Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Fusion Pay Payment Gateway allows you to seamlessly integrate the Fusion Pay payment system into your WordPress website with a customizable payment form and dynamic article handling.
+Fusion Pay Payment Gateway allows you to seamlessly integrate the Fusion Pay payment system into your WordPress website.a
 
 == Description ==
 
-Fusion Pay Payment Gateway is a custom WordPress plugin that integrates the Fusion Pay payment system into your WordPress website. This plugin provides a user-friendly interface for configuring payment settings, dynamically handling articles and prices, and supporting multiple languages (English and French).
+Fusion Pay Payment Gateway is a custom WordPress plugin that integrates the Fusion Pay payment system into your WordPress website. This plugin provides a user-friendly interface for configuring payment settings.
 
 = Key Features =
 * Easy installation and setup
