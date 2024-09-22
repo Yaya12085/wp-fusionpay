@@ -10,10 +10,10 @@ License: GPL2
 */
 
 add_action('admin_enqueue_scripts', function() {
-    wp_enqueue_style('style', plugin_dir_url(__FILE__) . 'admin.css');
+    wp_enqueue_style('style', plugin_dir_url(__FILE__) . 'styles/admin.css');
 });
 add_action('wp_enqueue_scripts', function() {
-    wp_enqueue_style('style', plugin_dir_url(__FILE__) . 'client.css');
+    wp_enqueue_style('style', plugin_dir_url(__FILE__) . 'styles/client.css');
 });
 
 // Register plugin settings
