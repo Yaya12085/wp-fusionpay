@@ -44,23 +44,27 @@ To display the payment form on a page or post, use the following shortcode:
 ```
 
 This will render the payment form with fields for the customer's name and phone number, along with the articles and total price if configured to display.
+
 #### preview
+
 ![form](https://github.com/Yaya12085/wp-fusionpay/images/result.webp?raw=true)
 
-
 ## License
+
 This plugin is licensed under the GPL2. You can modify and distribute it as per the terms of the license.
 
 ## Support
+
 For any issues or feature requests, please visit the [GitHub Issues Page](https://github.com/Yaya12085/wp-fusionpay/issues)
 
 ## Author
-Yaya Mohamed
 
+Yaya Mohamed
 
 Feel free to customize any sections according to your preferences or specific requirements!
 
 ## Donations
+
 If you find this plugin useful and would like to support its development, consider making a donation:
 
 [Make a Donation](https://www.pay.moneyfusion.net/Faire_un_don_1726979068528/)
