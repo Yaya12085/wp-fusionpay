@@ -54,7 +54,7 @@ function fusion_pay_create_menu() {
     'administrator', 
     __FILE__, 
     'fusion_pay_settings_page', 
-    plugin_dir_url( __FILE__ ) . 'images/icon.png');
+    plugin_dir_url( __FILE__ ) . 'assets/icon.png');
 }
 add_action('admin_menu', 'fusion_pay_create_menu');
 

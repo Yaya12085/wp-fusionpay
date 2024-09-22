@@ -33,7 +33,7 @@ After activating the plugin, follow these steps to configure it:
 
 #### preview
 
-![panel](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/images/panel.webp)
+![panel](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/assets/screenshot-1.png)
 
 ## Shortcode Usage
 
@@ -47,7 +47,7 @@ This will render the payment form with fields for the customer's name and phone 
 
 #### preview
 
-![form](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/images/result.webp)
+![form](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/assets/screenshot-2.png)
 
 ## License
 
