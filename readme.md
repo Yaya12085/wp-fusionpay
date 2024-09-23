@@ -2,7 +2,7 @@
 
 ## Description
 
-Fusion Pay Payment Gateway is a custom WordPress plugin that allows you to integrate the Fusion Pay payment system into your WordPress website. This plugin provides a user-friendly interface for managing payment settings and allows users to make payments seamlessly.
+Fusion Pay Payment Gateway is a custom WordPress plugin that allows you to integrate the Fusion Pay payment system into your WordPress website. This plugin provides a user-friendly interface for managing payment settings and allows users to make payments seamlessly. It now includes WooCommerce support for easy integration with your e-commerce store.
 
 ## Features
 
@@ -12,6 +12,7 @@ Fusion Pay Payment Gateway is a custom WordPress plugin that allows you to integ
 - Multilingual support (English and French)
 - Shortcode for embedding payment form
 - Dynamic handling of articles in the payment form
+- WooCommerce integration for seamless e-commerce payments
 
 ## Installation
 
@@ -29,7 +30,8 @@ After activating the plugin, follow these steps to configure it:
 3. Add articles with their names and prices.
 4. Set the **Total Price** and choose whether to display articles and total price on the payment form.
 5. Select the form language (English or French).
-6. Save your settings.
+6. If using WooCommerce, enable the WooCommerce integration in the settings.
+7. Save your settings.
 
 #### preview
 
@@ -48,6 +50,22 @@ This will render the payment form with fields for the customer's name and phone 
 #### preview
 
 ![form](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/assets/screenshot-2.png)
+
+## WooCommerce Integration
+
+To use Fusion Pay with WooCommerce:
+
+1. Ensure WooCommerce is installed and activated.
+2. Go to WooCommerce > Settings > Payments.
+3. Enable "Fusion Pay" as a payment method.
+   ![woocommerce-fusionpay-activation](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/assets/woo-activation.png)
+
+4. Click "Manage" next to Fusion Pay to configure additional settings.
+   ![form](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/assets/screenshot-4.png)
+
+Customers can now select Fusion Pay as a payment option during checkout.
+
+![form](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/assets/screenshot-4.png)
 
 ## License
 
