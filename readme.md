@@ -61,7 +61,7 @@ To use Fusion Pay with WooCommerce:
    ![woocommerce-fusionpay-activation](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/assets/woo-activation.png)
 
 4. Click "Manage" next to Fusion Pay to configure additional settings.
-   ![form](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/assets/screenshot-4.png)
+   ![form](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/assets/screenshot-3.png)
 
 Customers can now select Fusion Pay as a payment option during checkout.
 
