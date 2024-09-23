@@ -283,3 +283,5 @@ function fusion_pay_form_shortcode() {
     return ob_get_clean();
 }
 add_shortcode('fusion_pay_form', 'fusion_pay_form_shortcode');
+
+include_once(plugin_dir_path(__FILE__) . 'woocommerce-fusionpay.php');
