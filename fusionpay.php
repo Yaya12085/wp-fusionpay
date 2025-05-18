@@ -105,7 +105,7 @@ function init_fusion_pay_gateway() {
                 'webhook_url' => array(
                     'title'       => __('Webhook URL', 'woocommerce'),
                     'type'        => 'text',
-                    'description' => __('URL que vous devez configurer dans votre tableau de bord MoneyFusion pour recevoir les notifications de paiement.', 'woocommerce'),
+                    'description' => __('URL que vous devez configurer pour recevoir les notifications de paiement.', 'woocommerce'),
                     'default'     => home_url('/wc-api/wc_fusion_pay_gateway'),
                     'placeholder' => home_url('/wc-api/wc_fusion_pay_gateway'),
                     'desc_tip'    => true,

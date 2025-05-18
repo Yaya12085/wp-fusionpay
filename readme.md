@@ -18,10 +18,9 @@ Fusion Pay WooCommerce Payment Gateway is a custom WordPress plugin that allows 
 
 ## Installation
 
-1. Download the plugin from the [Fusion Pay Plugin Repository](https://wordpress.org/plugins/fusionpay).
-2. Upload the `fusionpay` folder to the `/wp-content/plugins/` directory.
+1. Download the plugin from the [this link](https://docs.moneyfusion.net/fusionpay.zip).
+2. Install it or upload the `fusionpay` folder to the `/wp-content/plugins/` directory.
 3. Activate the plugin through the 'Plugins' menu in WordPress.
-4. Navigate to the "Fusion Pay" settings page in the admin dashboard to configure your API and payment settings.
 
 ## WooCommerce Integration
 
@@ -39,7 +38,7 @@ To use Fusion Pay with WooCommerce:
    - **Description**: Provide information about this payment method to your customers
    - **API URL**: Enter your unique Fusion Pay API URL (create an app on [moneyfusion](https://moneyfusion.net/dashboard/fusionpay) to get the url)
    - **Return URL**: URL where customers will be redirected after payment
-   - **Webhook Secret**: Optional security key to verify webhook notifications
+   - **Webhook URL**: URL you need to configure to receive payment notifications.
    - **Debug Log**: Enable for troubleshooting payment issues. Found on `https://your-site.com/wp-admin/admin.php?page=wc-status&tab=logs` and source `fusion-pay`
 
    ![form](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/assets/screenshot-3.png)
@@ -74,14 +73,12 @@ If you encounter issues with the gateway:
 1. Enable Debug Log in the gateway settings
 2. Check the WooCommerce system status logs for any errors
 3. Verify your API URL is correctly entered
-
-## License
-
-This plugin is licensed under the GPL2. You can modify and distribute it as per the terms of the license.
+4. If the payment option is not visible, go to the payment page and enter `[woocommerce_checkout]` in the shortcut section for more information:
+   [![Watch the video](https://img.youtube.com/vi/sfYauEEO7S0/0.jpg)](https://www.youtube.com/watch?v=sfYauEEO7S0)
 
 ## Support
 
-For any issues or feature requests, please visit the [GitHub Issues Page](https://github.com/Yaya12085/wp-fusionpay/issues)
+Pour tout problème ou demande de fonctionnalité, veuillez consulter la [GitHub Issues Page](https://github.com/Yaya12085/wp-fusionpay/issues)
 
 ## Author
 
