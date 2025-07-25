@@ -2,14 +2,13 @@
 /*
 Plugin Name: FusionPay
 Plugin URI: https://moneyfusion.net
-Description: A custom woocommerce payment gateway plugin for Fusion Pay.
-Version: 0.0.2
+Description: A custom WooCommerce payment gateway plugin for Fusion Pay.
+Version: 0.0.3
 Author: Yaya Mohamed
 Author URI: https://yayamohamed.com
 License: GPL2
 */
 
-// Exit if accessed directly
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -21,6 +20,13 @@ if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get
 
 // Add the gateway to WooCommerce
 add_filter('woocommerce_payment_gateways', 'add_fusion_pay_gateway');
+
+add_filter('woocommerce_billing_fields', function($fields) {
+    if (isset($fields['billing_phone'])) {
+        $fields['billing_phone']['required'] = true;
+    }
+    return $fields;
+});
 
 function add_fusion_pay_gateway($methods) {
     $methods[] = 'WC_Fusion_Pay_Gateway';
@@ -36,6 +42,12 @@ function init_fusion_pay_gateway() {
     }
 
     class WC_Fusion_Pay_Gateway extends WC_Payment_Gateway {
+        // Explicit property declarations
+        private bool $debug = false;
+        private string $api_url = '';
+        private string $return_url = '';
+        private string $webhook_url = '';
+
         public function __construct() {
             $this->id                 = 'fusion_pay';
             $this->icon               = apply_filters('woocommerce_fusion_pay_icon', plugins_url('assets/icon.png', __FILE__));
@@ -54,15 +66,9 @@ function init_fusion_pay_gateway() {
             $this->webhook_url  = $this->get_option('webhook_url');
             $this->debug        = 'yes' === $this->get_option('debug');
 
-            // Save settings
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-            
-            // Register webhook handler
             add_action('woocommerce_api_wc_fusion_pay_gateway', array($this, 'handle_webhook'));
-            
-
         }
-        
 
         public function init_form_fields() {
             $this->form_fields = array(
@@ -97,7 +103,7 @@ function init_fusion_pay_gateway() {
                 'return_url' => array(
                     'title'       => __('Return URL', 'woocommerce'),
                     'type'        => 'text',
-                    'description' => __('URL où le client sera redirigé après le paiement(page de remerciement).', 'woocommerce'),
+                    'description' => __('URL où le client sera redirigé après le paiement (page de remerciement).', 'woocommerce'),
                     'default'     => home_url('/'),
                     'placeholder' => home_url('/thanks'),
                     'desc_tip'    => true,
@@ -120,15 +126,21 @@ function init_fusion_pay_gateway() {
             );
         }
 
-        /**
-         * Process payment
-         */
         public function process_payment($order_id) {
             $order = wc_get_order($order_id);
+
+            $phone = $order->get_billing_phone();
+
+            // ✅ Validate phone number
+            if (empty($phone)) {
+                wc_add_notice(__('Le numéro de téléphone est requis pour Fusion Pay.', 'woocommerce'), 'error');
+                return;
+            }
 
             if ($this->debug) {
                 $this->log('Processing payment for order #' . $order_id);
             }
+            
 
             $body = array(
                 'totalPrice' => $order->get_total(),
@@ -159,110 +171,91 @@ function init_fusion_pay_gateway() {
             if (is_wp_error($response)) {
                 $error_message = $response->get_error_message();
                 if ($this->debug) {
-                    $this->log('Payment error: ' . $error_message);
+                    $this->log('Erreur de paiement: ' . $error_message);
                 }
-                wc_add_notice(__('Payment error:', 'woocommerce') . $error_message, 'error');
+                wc_add_notice(__('Erreur de paiement:', 'woocommerce') . $error_message, 'error');
                 return;
             }
 
             $response_body = json_decode(wp_remote_retrieve_body($response), true);
 
             if (isset($response_body['statut']) && $response_body['statut']) {
-                // Update order status to awaiting payment
-                $order->update_status('pending-payment', __('Awaiting Fusion Pay payment', 'woocommerce'));
-                
+                $order->update_status('pending-payment', __('En attente de paiement Fusion Pay', 'woocommerce'));
+
                 if ($this->debug) {
-                    $this->log('Payment initiated successfully for order #' . $order_id . '. Redirecting to: ' . $response_body['url']);
+                    $this->log('Paiement initié pour la commande #' . $order_id . '. Redirection vers: ' . $response_body['url']);
                 }
-                
-            
-                // Redirect to the payment URL
+
                 return array(
                     'result'   => 'success',
                     'redirect' => $response_body['url'],
                 );
             } else {
-                $error_message = $response_body['message'] ?? __('Unknown error', 'woocommerce');
+                $error_message = $response_body['message'] ?? __('Erreur inconnue', 'woocommerce');
                 if ($this->debug) {
-                    $this->log('Payment API error: ' . $error_message);
+                    $this->log('Erreur API de paiement: ' . $error_message);
                 }
-                wc_add_notice(__('Payment error:', 'woocommerce') . $error_message, 'error');
+                wc_add_notice(__('Erreur de paiement:', 'woocommerce') . $error_message, 'error');
                 return;
             }
         }
 
-        /**
-         * Webhook handler for Fusion Pay
-         */
         public function handle_webhook() {
             $payload = file_get_contents('php://input');
             $data = json_decode($payload, true);
-            
+
             if ($this->debug) {
                 $this->log('Webhook received: ' . print_r($data, true));
             }
-            
-            
-            // Process webhook data
+
             if (isset($data['personal_Info'][0]['orderId']) && isset($data['statut'])) {
                 $order_id = $data['personal_Info'][0]['orderId'];
-                $user_id = $data['personal_Info'][0]['userId'];
                 $status = $data['statut'];
-                
+
                 $order = wc_get_order($order_id);
-                
+
                 if (!$order) {
                     if ($this->debug) {
                         $this->log('Order #' . $order_id . ' not found');
                     }
-                    wp_die('Order not found', 'Order Not Found', array('response' => 404));
+                    wp_die('Commande non trouvée', 'Commande non trouvée', array('response' => 404));
                 }
-                
-            
-                
-                // Update order status based on payment status
+
                 switch ($status) {
                     case 'paid':
-                        $order->update_status('completed', __('Payment completed via Fusion Pay.', 'woocommerce'));
-                        $order->add_order_note(__('Payment successful via Fusion Pay.', 'woocommerce'));
+                        $order->update_status('completed', __('Paiement effectué via Fusion Pay.', 'woocommerce'));
+                        $order->add_order_note(__('Paiement effectué via Fusion Pay.', 'woocommerce'));
                         break;
-                        
                     case 'pending':
-                        $order->update_status('pending-payment', __('Payment is being processed via Fusion Pay.', 'woocommerce'));
+                        $order->update_status('pending-payment', __('Paiement en cours via Fusion Pay.', 'woocommerce'));
                         break;
-                        
                     case 'failure':
-                        $order->update_status('failed', __('Payment failed via Fusion Pay.', 'woocommerce'));
+                        $order->update_status('failed', __('Paiement échoué via Fusion Pay.', 'woocommerce'));
                         break;
-                        
                     case 'no paid':
-                        $order->update_status('on-hold', __('Payment not completed via Fusion Pay.', 'woocommerce'));
+                        $order->update_status('on-hold', __('Paiement non effectué via Fusion Pay.', 'woocommerce'));
                         break;
-                        
                     default:
                         if ($this->debug) {
-                            $this->log('Unknown payment status: ' . $status);
+                            $this->log('Statut de paiement inconnu: ' . $status);
                         }
                         break;
                 }
-                
+
                 if ($this->debug) {
-                    $this->log('Order #' . $order_id . ' updated with status: ' . $status);
+                    $this->log('Commande #' . $order_id . ' mise à jour avec le statut: ' . $status);
                 }
-                
-                wp_die('Webhook processed successfully', 'Success', array('response' => 200));
+
+                wp_die('Webhook traité avec succès', 'Succès', array('response' => 200));
             }
-            
+
             if ($this->debug) {
-                $this->log('Invalid webhook data: missing orderId or statut');
+                $this->log('Données webhook invalides: manquant orderId ou statut');
             }
-            
-            wp_die('Invalid webhook data', 'Invalid Data', array('response' => 400));
+
+            wp_die('Données webhook invalides', 'Données invalides', array('response' => 400));
         }
 
-        /**
-         * Get order items formatted for Fusion Pay API
-         */
         private function get_order_items($order) {
             $items = array();
             foreach ($order->get_items() as $item) {
@@ -274,13 +267,6 @@ function init_fusion_pay_gateway() {
             return $items;
         }
 
-        
-
-        
-
-        /**
-         * Log debug information
-         */
         private function log($message) {
             if ($this->debug) {
                 $logger = wc_get_logger();
