@@ -1,4 +1,8 @@
 <?php
+/**
+ * Version simplifiée avec JS inline
+ * Fichier : includes/class-wc-fusion-pay-blocks-support.php
+ */
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
@@ -11,45 +15,69 @@ final class WC_Fusion_Pay_Blocks_Support extends AbstractPaymentMethodType
     {
         $this->settings = get_option("woocommerce_fusion_pay_settings", []);
         $gateways = WC()->payment_gateways->payment_gateways();
-        $this->gateway = $gateways[$this->name];
+        $this->gateway = isset($gateways[$this->name])
+            ? $gateways[$this->name]
+            : null;
     }
 
     public function is_active()
     {
-        return $this->gateway->is_available();
+        return $this->gateway && $this->gateway->is_available();
     }
 
     public function get_payment_method_script_handles()
     {
-        $script_path = "/assets/js/fusion-pay-blocks.js";
-        $script_asset_path =
-            plugin_dir_path(__FILE__) .
-            "../assets/js/fusion-pay-blocks.asset.php";
-        $script_asset = file_exists($script_asset_path)
-            ? require $script_asset_path
-            : [
-                "dependencies" => [],
-                "version" => "1.0.0",
-            ];
-        $script_url = plugins_url($script_path, dirname(__FILE__));
+        $script_handle = "wc-fusion-pay-blocks-inline";
 
+        // Enregistrer un script inline
         wp_register_script(
-            "wc-fusion-pay-blocks",
-            $script_url,
-            $script_asset["dependencies"],
-            $script_asset["version"],
+            $script_handle,
+            "",
+            [
+                "wc-blocks-registry",
+                "wc-settings",
+                "wp-element",
+                "wp-html-entities",
+            ],
+            null,
             true,
         );
 
-        if (function_exists("wp_set_script_translations")) {
-            wp_set_script_translations(
-                "wc-fusion-pay-blocks",
-                "woocommerce",
-                plugin_dir_path(__FILE__) . "../languages/",
-            );
-        }
+        // Ajouter le code JavaScript inline
+        $script = "
+        (function() {
+            const { registerPaymentMethod } = window.wc.wcBlocksRegistry;
+            const { getSetting } = window.wc.wcSettings;
+            const { decodeEntities } = window.wp.htmlEntities;
+            const { createElement } = window.wp.element;
 
-        return ["wc-fusion-pay-blocks"];
+            const settings = getSetting('fusion_pay_data', {});
+            const label = decodeEntities(settings.title) || 'Fusion Pay';
+            const description = decodeEntities(settings.description) || '';
+
+            const Content = () => {
+                return createElement('div', {
+                    dangerouslySetInnerHTML: { __html: description }
+                });
+            };
+
+            registerPaymentMethod({
+                name: 'fusion_pay',
+                label: label,
+                content: createElement(Content),
+                edit: createElement(Content),
+                canMakePayment: () => true,
+                ariaLabel: label,
+                supports: {
+                    features: settings.supports || []
+                }
+            });
+        })();
+        ";
+
+        wp_add_inline_script($script_handle, $script);
+
+        return [$script_handle];
     }
 
     public function get_payment_method_data()
@@ -57,10 +85,7 @@ final class WC_Fusion_Pay_Blocks_Support extends AbstractPaymentMethodType
         return [
             "title" => $this->get_setting("title"),
             "description" => $this->get_setting("description"),
-            "supports" => array_filter($this->gateway->supports, [
-                $this->gateway,
-                "supports",
-            ]),
+            "supports" => $this->gateway ? $this->gateway->supports : [],
         ];
     }
 }
