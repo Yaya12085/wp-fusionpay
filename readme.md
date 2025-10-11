@@ -18,7 +18,7 @@ Fusion Pay WooCommerce Payment Gateway is a custom WordPress plugin that allows 
 
 ## Installation
 
-1. Download the plugin from the [this link](https://docs.moneyfusion.net/fusionpay.zip).
+1. Download the plugin from the [this link](https://github.com/Yaya12085/wp-fusionpay/archive/refs/heads/main.zip).
 2. Install it or upload the `fusionpay` folder to the `/wp-content/plugins/` directory.
 3. Activate the plugin through the 'Plugins' menu in WordPress.
 
@@ -32,7 +32,6 @@ To use Fusion Pay with WooCommerce:
    ![woocommerce-fusionpay-activation](https://raw.githubusercontent.com/Yaya12085/wp-fusionpay/refs/heads/main/assets/woo-activation.png)
 
 4. Click "Manage" next to Fusion Pay to configure the gateway settings:
-
    - **Enable/Disable**: Activate or deactivate the payment method
    - **Title**: Customize how the payment method appears to customers (default: "Fusion Pay")
    - **Description**: Provide information about this payment method to your customers
